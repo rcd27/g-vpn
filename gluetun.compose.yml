@@ -1,0 +1,29 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    volumes:
+      # :ro - только чтение
+      - ./vpn/openvpn/g_vpn_0.ovpn:/gluetun/custom.conf:ro
+    environment:
+      - VPN_SERVICE_PROVIDER=custom
+      - VPN_TYPE=openvpn
+      - OPENVPN_CUSTOM_CONFIG=/gluetun/custom.conf
+      - HTTPPROXY=on
+      - HTTPPROXY_LOG=on
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - gluetun-network
+    ports:
+      - "8888:8888"
+    restart: always
+
+networks:
+  gluetun-network:
+    driver: bridge
